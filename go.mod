@@ -3,6 +3,7 @@ module github.com/dexidp/dex
 go 1.14
 
 require (
+	cloud.google.com/go v0.38.0
 	github.com/Microsoft/hcsshim v0.8.7 // indirect
 	github.com/beevik/etree v1.1.0
 	github.com/coreos/go-oidc v2.2.1+incompatible
