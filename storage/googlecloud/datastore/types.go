@@ -3,46 +3,66 @@ package datastore
 import (
 	"encoding/json"
 
+	gds "cloud.google.com/go/datastore"
 	"github.com/dexidp/dex/storage"
 )
 
-// Keys replaces the strcuture of Keys since *jose.JSONWebKey uses interface{}
-// which datastore doesn't handle well but does implement a good
-// JSON marshaler we will piggy back on it.
-type Keys struct {
-	JSON []byte `datastore:",noindex"`
+// KeysJSONWrapper is a utility which strips all the structure of the saved object
+// and stores it as an opaque JSON blog. Some fields used by dex have map[string]....
+// which isn't supported by datastore; dex do however only do CRUD + list operations
+// no seaches so an opaque blob would do for all our use cases.
+type KeysJSONWrapper struct {
+	storage.Keys
 }
 
-func NewKeys(keys storage.Keys) (*Keys, error) {
-	js, err := json.Marshal(keys)
+// Load implements datastore PropertyLoadSaver Interface
+func (x *KeysJSONWrapper) Load(ps []gds.Property) error {
+	b := ps[0].Value.([]byte)
+	err := json.Unmarshal(b, &x.Keys)
+	return err
+}
+
+// Save implements datastore PropertyLoadSaver Interface
+func (x *KeysJSONWrapper) Save() ([]gds.Property, error) {
+	b, err := json.Marshal(&x.Keys)
 	if err != nil {
 		return nil, err
 	}
-	return &Keys{
-		JSON: js,
+	return []gds.Property{
+		{
+			Name:    "JSON",
+			Value:   b,
+			NoIndex: true,
+		},
 	}, nil
 }
 
-func (k *Keys) ToStorageModel() (res storage.Keys, err error) {
-	return res, json.Unmarshal(k.JSON, &res)
+// OfflineSessionsJSONWrapper is a utility which strips all the structure of the saved object
+// and stores it as an opaque JSON blog. Some fields used by dex have map[string]....
+// which isn't supported by datastore; dex do however only do CRUD + list operations
+// no seaches so an opaque blob would do for all our use cases.
+type OfflineSessionsJSONWrapper struct {
+	storage.OfflineSessions
 }
 
-// OfflineSessions uses a map[string]Storage.Refreshtoken which datastore objects to
-// as suche we also turn it into a json string.
-type OfflineSessions struct {
-	JSON []byte `datastore:",noindex"`
+// Load implements datastore PropertyLoadSaver Interface
+func (x *OfflineSessionsJSONWrapper) Load(ps []gds.Property) error {
+	b := ps[0].Value.([]byte)
+	err := json.Unmarshal(b, &x.OfflineSessions)
+	return err
 }
 
-func NewOfflineSessions(sessions storage.OfflineSessions) (*OfflineSessions, error) {
-	js, err := json.Marshal(sessions)
+// Save implements datastore PropertyLoadSaver Interface
+func (x *OfflineSessionsJSONWrapper) Save() ([]gds.Property, error) {
+	b, err := json.Marshal(x.OfflineSessions)
 	if err != nil {
 		return nil, err
 	}
-	return &OfflineSessions{
-		JSON: js,
+	return []gds.Property{
+		{
+			Name:    "JSON",
+			Value:   b,
+			NoIndex: true,
+		},
 	}, nil
-}
-
-func (k *OfflineSessions) ToStorageModel() (res storage.OfflineSessions, err error) {
-	return res, json.Unmarshal(k.JSON, &res)
 }

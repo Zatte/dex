@@ -187,15 +187,11 @@ func (s *datastore) CreatePassword(p storage.Password) (err error) {
 }
 
 func (s *datastore) CreateOfflineSessions(o storage.OfflineSessions) (err error) {
-	id := o.UserID + "|" + o.ConnID // TODO: maybe fix into something smarter
-	jsonContainer, err := NewOfflineSessions(o)
-	if err != nil {
-		return err
-	}
+	id := o.UserID + "|" + o.ConnID
 	return s.create(
 		gds.NameKey(s.kindPrefix+"OfflineSessions", id, nil),
-		jsonContainer,
-		&OfflineSessions{},
+		&OfflineSessionsJSONWrapper{o},
+		&OfflineSessionsJSONWrapper{storage.OfflineSessions{}},
 	)
 }
 
@@ -230,15 +226,12 @@ func (s *datastore) GetClient(id string) (client storage.Client, err error) {
 }
 
 func (s *datastore) GetKeys() (keys storage.Keys, err error) {
-	dsKeys := Keys{}
+	wrapper := &KeysJSONWrapper{keys}
 	err = s.get(
 		gds.NameKey(s.kindPrefix+"Keys", keysId, nil),
-		&dsKeys,
+		wrapper,
 	)
-	if err != nil {
-		return keys, err
-	}
-	return dsKeys.ToStorageModel()
+	return wrapper.Keys, err
 }
 
 func (s *datastore) GetRefresh(id string) (tok storage.RefreshToken, err error) {
@@ -256,17 +249,17 @@ func (s *datastore) GetAuthRequest(id string) (req storage.AuthRequest, err erro
 }
 
 func (s *datastore) GetOfflineSessions(userID string, connID string) (o storage.OfflineSessions, err error) {
-	id := userID + "|" + connID // TODO: maybe fix into something smarter
-	LocalSession := OfflineSessions{}
+	id := userID + "|" + connID
+	wrapper := &OfflineSessionsJSONWrapper{o}
 	err = s.get(
 		gds.NameKey(s.kindPrefix+"OfflineSessions", id, nil),
-		&LocalSession,
+		wrapper,
 	)
 	if err != nil {
-		return o, err
+		return wrapper.OfflineSessions, err
 	}
 
-	return LocalSession.ToStorageModel()
+	return wrapper.OfflineSessions, err
 }
 
 func (s *datastore) GetConnector(id string) (connector storage.Connector, err error) {
@@ -326,8 +319,9 @@ func (s *datastore) DeleteAuthRequest(id string) (err error) {
 }
 
 func (s *datastore) DeleteOfflineSessions(userID string, connID string) (err error) {
-	id := userID + "|" + connID // TODO: maybe fix into something smarter
-	return s.delete(gds.NameKey(s.kindPrefix+"OfflineSessions", id, nil), storage.OfflineSessions{})
+	id := userID + "|" + connID
+	return s.delete(gds.NameKey(s.kindPrefix+"OfflineSessions", id, nil),
+		&OfflineSessionsJSONWrapper{storage.OfflineSessions{}})
 }
 
 func (s *datastore) DeleteConnector(id string) (err error) {
@@ -354,23 +348,13 @@ func (s *datastore) UpdateClient(id string, updater func(old storage.Client) (st
 func (s *datastore) UpdateKeys(updater func(old storage.Keys) (storage.Keys, error)) (err error) {
 	key := gds.NameKey(s.kindPrefix+"Keys", keysId, nil)
 	_, err = s.client.RunInTransaction(s.ctx, func(tx *gds.Transaction) error {
-		old := &Keys{}
-		if err := tx.Get(key, old); err != nil && err != gds.ErrNoSuchEntity {
+		dbEntity := &KeysJSONWrapper{}
+		if err := tx.Get(key, dbEntity); err != nil && err != gds.ErrNoSuchEntity {
 			return err
 		}
-		oldInStorgeFormat := storage.Keys{}
-		if len(old.JSON) > 0 {
-			oldInStorgeFormat, err = old.ToStorageModel()
-			if err != nil {
-				return err
-			}
-		}
-		if new, err := updater(oldInStorgeFormat); err == nil {
-			toBeSaved, err := NewKeys(new)
-			if err != nil {
-				return err
-			}
-			if _, err := tx.Put(key, toBeSaved); err != nil {
+
+		if new, err := updater(dbEntity.Keys); err == nil {
+			if _, err := tx.Put(key, &KeysJSONWrapper{new}); err != nil {
 				return err
 			}
 		}
@@ -432,28 +416,19 @@ func (s *datastore) UpdateRefreshToken(id string, updater func(p storage.Refresh
 }
 
 func (s *datastore) UpdateOfflineSessions(userID string, connID string, updater func(o storage.OfflineSessions) (storage.OfflineSessions, error)) (err error) {
-	id := userID + "|" + connID // TODO: maybe fix into something smarter
+	id := userID + "|" + connID
 	key := gds.NameKey(s.kindPrefix+"OfflineSessions", id, nil)
 	_, err = s.client.RunInTransaction(s.ctx, func(tx *gds.Transaction) error {
-		old := OfflineSessions{}
-		if err := tx.Get(key, &old); err != nil && err != gds.ErrNoSuchEntity {
-			return storage.ErrNotFound
+		dbEntity := &OfflineSessionsJSONWrapper{storage.OfflineSessions{}}
+		if err := tx.Get(key, dbEntity); err != nil {
+			if err == gds.ErrNoSuchEntity {
+				return storage.ErrNotFound
+			}
+			return err
 		}
 
-		oldInStorgeFormat := storage.OfflineSessions{}
-		if len(old.JSON) > 0 {
-			oldInStorgeFormat, err = old.ToStorageModel()
-			if err != nil {
-				return err
-			}
-		}
-
-		if new, err := updater(oldInStorgeFormat); err == nil {
-			toBeSaved, err := NewOfflineSessions(new)
-			if err != nil {
-				return err
-			}
-			if _, err := tx.Put(key, toBeSaved); err != nil {
+		if new, err := updater(dbEntity.OfflineSessions); err == nil {
+			if _, err := tx.Put(key, &OfflineSessionsJSONWrapper{new}); err != nil {
 				return err
 			}
 		}
