@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -28,9 +27,8 @@ func TestStorage(t *testing.T) {
 
 	newStorage := func() storage.Storage {
 		c := Config{
-			ctx:        context.Background(),
-			projectID:  projectId,
-			kindPrefix: "__TestingDex__",
+			ProjectID:  projectId,
+			KindPrefix: "__TestingDex__",
 		}
 		s, err := c.Open(logger)
 		if err != nil {

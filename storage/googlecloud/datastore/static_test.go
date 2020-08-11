@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -14,9 +13,8 @@ import (
 
 func newStorage(t *testing.T, logger *logrus.Logger, projectId string) storage.Storage {
 	c := Config{
-		ctx:        context.Background(),
-		projectID:  projectId,
-		kindPrefix: "__TestingDex__",
+		ProjectID:  projectId,
+		KindPrefix: "__TestingDex__",
 	}
 	s, err := c.Open(logger)
 

@@ -15,21 +15,21 @@ const (
 
 // Config is an implementation of a storage configuration.
 type Config struct {
-	ctx        context.Context
-	projectID  string
-	kindPrefix string
+	ProjectID  string `json:"projectId" yaml:"projectId"`
+	KindPrefix string `json:"kindPrefix" yaml:"kindPrefix"`
 }
 
 // Open always returns a new in memory storage.
 func (c *Config) Open(logger log.Logger) (storage.Storage, error) {
-	ctx, cancelFn := context.WithCancel(c.ctx)
-	client, err := googleDatastore.NewClient(ctx, c.projectID)
+	ctx, cancelFn := context.WithCancel(context.Background())
+	client, err := googleDatastore.NewClient(ctx, c.ProjectID)
 	if err != nil {
+		cancelFn()
 		return nil, err
 	}
 	return &datastore{
 		ctx:        ctx,
-		kindPrefix: c.kindPrefix,
+		kindPrefix: c.KindPrefix,
 		logger:     logger,
 		client:     client,
 		cancelFn:   cancelFn,
