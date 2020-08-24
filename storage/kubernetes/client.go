@@ -25,9 +25,9 @@ import (
 	"github.com/ghodss/yaml"
 	"golang.org/x/net/http2"
 
-	"github.com/dexidp/dex/pkg/log"
-	"github.com/dexidp/dex/storage"
-	"github.com/dexidp/dex/storage/kubernetes/k8sapi"
+	"github.com/zatte/dex/pkg/log"
+	"github.com/zatte/dex/storage"
+	"github.com/zatte/dex/storage/kubernetes/k8sapi"
 )
 
 type client struct {

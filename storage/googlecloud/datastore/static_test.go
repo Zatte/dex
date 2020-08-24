@@ -8,7 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/dexidp/dex/storage"
+	"github.com/zatte/dex/storage"
 )
 
 func newStorage(t *testing.T, logger *logrus.Logger, projectId string) storage.Storage {

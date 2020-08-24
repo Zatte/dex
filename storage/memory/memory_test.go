@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/dexidp/dex/storage"
-	"github.com/dexidp/dex/storage/conformance"
+	"github.com/zatte/dex/storage"
+	"github.com/zatte/dex/storage/conformance"
 )
 
 func TestStorage(t *testing.T) {

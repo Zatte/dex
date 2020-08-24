@@ -6,8 +6,8 @@ import (
 
 	jose "gopkg.in/square/go-jose.v2"
 
-	"github.com/dexidp/dex/storage"
-	"github.com/dexidp/dex/storage/kubernetes/k8sapi"
+	"github.com/zatte/dex/storage"
+	"github.com/zatte/dex/storage/kubernetes/k8sapi"
 )
 
 var crdMeta = k8sapi.TypeMeta{

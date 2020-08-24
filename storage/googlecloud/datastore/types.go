@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	gds "cloud.google.com/go/datastore"
-	"github.com/dexidp/dex/storage"
+	"github.com/zatte/dex/storage"
 )
 
 // KeysJSONWrapper is a utility which strips all the structure of the saved object

@@ -10,9 +10,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dexidp/dex/connector"
+	"github.com/zatte/dex/connector"
 
-	"github.com/dexidp/dex/storage/kubernetes/k8sapi"
+	"github.com/zatte/dex/storage/kubernetes/k8sapi"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"

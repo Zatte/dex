@@ -9,13 +9,14 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/dexidp/dex/pkg/log"
-	"github.com/dexidp/dex/server"
-	"github.com/dexidp/dex/storage"
-	"github.com/dexidp/dex/storage/etcd"
-	"github.com/dexidp/dex/storage/kubernetes"
-	"github.com/dexidp/dex/storage/memory"
-	"github.com/dexidp/dex/storage/sql"
+	"github.com/zatte/dex/pkg/log"
+	"github.com/zatte/dex/server"
+	"github.com/zatte/dex/storage"
+	"github.com/zatte/dex/storage/etcd"
+	"github.com/zatte/dex/storage/googlecloud/datastore"
+	"github.com/zatte/dex/storage/kubernetes"
+	"github.com/zatte/dex/storage/memory"
+	"github.com/zatte/dex/storage/sql"
 )
 
 // Config is the config format for the main application.

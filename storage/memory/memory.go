@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dexidp/dex/pkg/log"
-	"github.com/dexidp/dex/storage"
+	"github.com/zatte/dex/pkg/log"
+	"github.com/zatte/dex/storage"
 )
 
 // New returns an in memory storage.

@@ -5,7 +5,7 @@ linters-settings:
     golint:
         min-confidence: 0.1
     goimports:
-        local-prefixes: github.com/dexidp/dex
+        local-prefixes: github.com/zatte/dex
 
 linters:
     enable-all: true

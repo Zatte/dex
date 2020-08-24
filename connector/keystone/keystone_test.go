@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dexidp/dex/connector"
+	"github.com/zatte/dex/connector"
 )
 
 const (

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	gds "cloud.google.com/go/datastore"
-	"github.com/dexidp/dex/pkg/log"
-	"github.com/dexidp/dex/storage"
+	"github.com/zatte/dex/pkg/log"
+	"github.com/zatte/dex/storage"
 )
 
 type datastore struct {

@@ -23,10 +23,10 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/dexidp/dex/api/v2"
-	"github.com/dexidp/dex/pkg/log"
-	"github.com/dexidp/dex/server"
-	"github.com/dexidp/dex/storage"
+	"github.com/zatte/dex/api/v2"
+	"github.com/zatte/dex/pkg/log"
+	"github.com/zatte/dex/server"
+	"github.com/zatte/dex/storage"
 )
 
 func commandServe() *cobra.Command {

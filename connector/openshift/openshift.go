@@ -12,11 +12,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dexidp/dex/connector"
-	"github.com/dexidp/dex/pkg/groups"
-	"github.com/dexidp/dex/pkg/log"
+	"github.com/zatte/dex/connector"
+	"github.com/zatte/dex/pkg/groups"
+	"github.com/zatte/dex/pkg/log"
 
-	"github.com/dexidp/dex/storage/kubernetes/k8sapi"
+	"github.com/zatte/dex/storage/kubernetes/k8sapi"
 
 	"golang.org/x/oauth2"
 )
