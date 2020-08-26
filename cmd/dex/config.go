@@ -50,6 +50,46 @@ type Config struct {
 	StaticPasswords []password `json:"staticPasswords"`
 }
 
+// UnmarshalJSON adds ExpandEnv to configs
+func (w *Config) UnmarshalJSON(b []byte) error {
+	var config struct {
+		Issuer           string           `json:"issuer"`
+		Storage          Storage          `json:"storage"`
+		Web              Web              `json:"web"`
+		Telemetry        Telemetry        `json:"telemetry"`
+		OAuth2           OAuth2           `json:"oauth2"`
+		GRPC             GRPC             `json:"grpc"`
+		Expiry           Expiry           `json:"expiry"`
+		Logger           Logger           `json:"logger"`
+		Frontend         server.WebConfig `json:"frontend"`
+		StaticConnectors []Connector      `json:"connectors"`
+		StaticClients    []storage.Client `json:"staticClients"`
+		EnablePasswordDB bool             `json:"enablePasswordDB"`
+		StaticPasswords  []password       `json:"staticPasswords"`
+	}
+	b = []byte(os.ExpandEnv(string(b)))
+	fmt.Print(string(b))
+	if err := json.Unmarshal(b, &config); err != nil {
+		return fmt.Errorf("parse config: %v", err)
+	}
+	*w = Config{
+		Issuer:           config.Issuer,
+		Storage:          config.Storage,
+		Web:              config.Web,
+		Telemetry:        config.Telemetry,
+		OAuth2:           config.OAuth2,
+		GRPC:             config.GRPC,
+		Expiry:           config.Expiry,
+		Logger:           config.Logger,
+		Frontend:         config.Frontend,
+		StaticConnectors: config.StaticConnectors,
+		StaticClients:    config.StaticClients,
+		EnablePasswordDB: config.EnablePasswordDB,
+		StaticPasswords:  config.StaticPasswords,
+	}
+	return nil
+}
+
 //Validate the configuration
 func (c Config) Validate() error {
 	// Fast checks. Perform these first for a more responsive CLI.
@@ -147,6 +187,29 @@ type Web struct {
 	AllowedOrigins []string `json:"allowedOrigins"`
 }
 
+// UnmarshalJSON allows adds ExpandEnv to web configs
+func (w *Web) UnmarshalJSON(b []byte) error {
+	var web struct {
+		HTTP           string   `json:"http"`
+		HTTPS          string   `json:"https"`
+		TLSCert        string   `json:"tlsCert"`
+		TLSKey         string   `json:"tlsKey"`
+		AllowedOrigins []string `json:"allowedOrigins"`
+	}
+	b = []byte(os.ExpandEnv(string(b)))
+	if err := json.Unmarshal(b, &web); err != nil {
+		return fmt.Errorf("parse web: %v", err)
+	}
+	*w = Web{
+		HTTP:           web.HTTP,
+		HTTPS:          web.HTTPS,
+		TLSCert:        web.TLSCert,
+		TLSKey:         web.TLSKey,
+		AllowedOrigins: web.AllowedOrigins,
+	}
+	return nil
+}
+
 // Telemetry is the config format for telemetry including the HTTP server config.
 type Telemetry struct {
 	HTTP string `json:"http"`
@@ -180,6 +243,7 @@ var storages = map[string]func() StorageConfig{
 	"sqlite3":    func() StorageConfig { return new(sql.SQLite3) },
 	"postgres":   func() StorageConfig { return new(sql.Postgres) },
 	"mysql":      func() StorageConfig { return new(sql.MySQL) },
+	"datastore":  func() StorageConfig { return new(datastore.Config) },
 }
 
 // UnmarshalJSON allows Storage to implement the unmarshaler interface to

@@ -13,14 +13,15 @@ FROM alpine:3.12
 # OpenSSL is required so wget can query HTTPS endpoints for health checking.
 RUN apk add --update ca-certificates openssl
 
-USER 1001:1001
+# USER 1001:1001
 COPY --from=0 /go/bin/dex /usr/local/bin/dex
 
 # Import frontend assets and set the correct CWD directory so the assets
 # are in the default path.
 COPY web /web
+COPY config /etc/dex
 WORKDIR /
 
 ENTRYPOINT ["dex"]
 
-CMD ["version"]
+CMD ["serve", "/etc/dex/dex.gcp.env.yaml"]
