@@ -1,3 +1,8 @@
+# Fork status - Abbandoned / WIP
+Some working changes; mostly POC and not ready for production (thouogh the datastore connector should be just fine.)
+[x] Added a working gogle datastore connector.
+[x] Made ad-hoc / WIP change to config parsing to allow more fields to be imported from env
+
 # dex - A federated OpenID Connect provider
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dexidp/dex/CI?style=flat-square)
